@@ -1,4 +1,3 @@
-// src/pages/About.tsx
 import { useState, useEffect } from 'react';
 import { Typography, Button, TextField, CircularProgress, Box, Avatar } from '@mui/material';
 import axiosAPI from "../../axiosAPI.ts";
@@ -31,10 +30,13 @@ const About = () => {
 
     const handleSaveClick = async () => {
         try {
+            setLoading(true);
             await axiosAPI.put('/about.json', { content });
             setIsEditing(false);
         } catch (error) {
             console.error("Error saving About page content:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
