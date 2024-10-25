@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {IPost} from "../../types";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import axiosAPI from "../../axiosAPI.ts";
 import {Box, Button, TextField, Typography} from "@mui/material";
+import Loader from "../Loader/Loader.tsx";
 
 const initialForm = {title: '', body: '', date: ''};
 
 const AddPostForm = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [post, setPost] = useState<IPost>(initialForm);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setPost({...post, [e.target.name]: e.target.value});
@@ -17,18 +20,52 @@ const AddPostForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
        e.preventDefault();
        try {
-           if (id) {
+           setLoading(true);
+           if (id) { try {
                await axiosAPI.put(`/posts/${id}.json`, post);
+           } catch (error) {
+               console.error(error);
+           } finally {
+               navigate(`/posts/${id}`)
+           }
            } else {
-               await axiosAPI.post(`/posts.json`, {...post, date: new Date().toISOString()});
+               try {
+                 await axiosAPI.post(`/posts.json`, {...post, date: new Date().toISOString()});
+               } catch (error) {
+                   console.error(error);
+               } finally {
+                   setPost({...initialForm});
+               }
            }
        } catch (error) {
            console.error(error);
        } finally {
-           setPost({...initialForm});
+           setLoading(false);
        }
-        console.error(post);
     };
+
+    useEffect(() => {
+        const getPostToEdit = async () => {
+            if (id) {
+                try {
+                    setLoading(true);
+                    const response = await axiosAPI.get(`/posts/${id}.json`);
+                    if (response.data) {
+                        setPost({ ...response.data });
+                    }
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setPost(initialForm);
+            }
+        };
+        void getPostToEdit();
+    }, [id]);
+
+    if (loading) return <Loader/>;
 
     return (
         <Box
@@ -46,7 +83,7 @@ const AddPostForm = () => {
                 boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
             }}
         >
-            <Typography variant="h5" gutterBottom>Add a New Post</Typography>
+            <Typography variant="h5" gutterBottom>{id ? 'Edit Post' : 'Add a New Post'}</Typography>
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
                 <TextField
                     id="outlined-title"
@@ -73,7 +110,7 @@ const AddPostForm = () => {
                     margin="normal"
                     />
                 <Box display="flex" justifyContent="center" mt={2}>
-                    <Button type="submit" variant="contained" color="primary">Add</Button>
+                    <Button type="submit" variant="contained" color="primary">{id ? 'Save' : 'Add'}</Button>
                 </Box>
             </form>
         </Box>

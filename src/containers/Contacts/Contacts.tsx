@@ -1,6 +1,7 @@
-import {Typography, Button, TextField, Box, CircularProgress} from '@mui/material';
+import {Typography, Button, TextField, Box} from '@mui/material';
 import React, {useEffect, useState} from "react";
 import axiosAPI from "../../axiosAPI.ts";
+import Loader from "../../components/Loader/Loader.tsx";
 
 const initialForm = { email: '', phone: '', address: '' };
 
@@ -47,7 +48,7 @@ const Contacts = () => {
         setIsEditing(true);
     };
 
-    if (loading) return <Box display="flex" justifyContent="center" mt={2}><CircularProgress /></Box>;
+    if (loading) return <Loader/>;
 
     return (
         <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3, border: '1px solid #ccc', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>

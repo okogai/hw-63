@@ -1,16 +1,19 @@
 import {useEffect, useState} from "react";
-import {IPosts} from "../../types";
+import {APIPost} from "../../types";
 import axiosAPI from "../../axiosAPI.ts";
 import {Box, Button, Card, CardContent, Typography} from "@mui/material";
 import {Link} from "react-router-dom";
+import Loader from "../Loader/Loader.tsx";
+import dayjs from 'dayjs';
 
 
 const ShowAllPosts = () => {
-    const [posts, setPosts] = useState<IPosts[]>([]);
-
+    const [posts, setPosts] = useState<APIPost[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     useEffect(() => {
         const fetchPosts = async () => {
             try {
+                setLoading(true);
                 const response = await axiosAPI.get('/posts.json');
                 if (response.data) {
                     const loadedPosts = Object.keys(response.data).map(postKey => {
@@ -23,11 +26,14 @@ const ShowAllPosts = () => {
                 }
             } catch (error) {
                 console.error(error);
+            } finally {
+                setLoading(false);
             }
         };
        void fetchPosts();
     }, []);
-    console.log(posts);
+
+    if (loading) return <Loader/>;
 
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 2, maxWidth: 1280, width: '100%', mx: 'auto' }}>
@@ -42,7 +48,7 @@ const ShowAllPosts = () => {
                     <Card sx={{ width: '100%' }}>
                         <CardContent>
                             <Typography color="textSecondary" sx={{ marginBottom: 2 }}>
-                                <strong>Created on:</strong> {new Date(post.date).toLocaleDateString()}
+                                <strong>Created on:</strong> {dayjs(post.date).format('DD.MM.YYYY HH:mm')}
                             </Typography>
                             <Typography variant="h5" sx={{ marginBottom: 2 }}>
                                 <strong>Title:</strong> {post.title}

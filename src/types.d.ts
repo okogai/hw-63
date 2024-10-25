@@ -4,7 +4,7 @@ export interface IPost {
     date: string;
 }
 
-export interface IPosts {
+export interface APIPost {
     id : string;
     title: string;
     body: string;

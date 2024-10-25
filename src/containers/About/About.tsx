@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Typography, Button, TextField, CircularProgress, Box, Avatar } from '@mui/material';
+import { Typography, Button, TextField, Box, Avatar } from '@mui/material';
 import axiosAPI from "../../axiosAPI.ts";
 import authorPhoto from "../../assets/author.jfif";
+import Loader from "../../components/Loader/Loader.tsx";
 
 const About = () => {
     const [content, setContent] = useState<string>('');
     const [isEditing, setIsEditing] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchAboutContent = async () => {
@@ -40,7 +41,7 @@ const About = () => {
         }
     };
 
-    if (loading) return <Box display="flex" justifyContent="center" mt={2}><CircularProgress /></Box>;
+    if (loading) return <Loader/>;
 
     return (
         <Box sx={{ maxWidth: 800, mx: 'auto', mt: 4, p: 2 }}>
