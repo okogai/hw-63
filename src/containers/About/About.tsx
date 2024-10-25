@@ -22,7 +22,7 @@ const About = () => {
             }
         };
 
-        fetchAboutContent();
+        void fetchAboutContent();
     }, []);
 
     const handleEditClick = () => {
